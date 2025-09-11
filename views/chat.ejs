@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="/css/chat.css">
+    <script src="/client.js" type="text/javascript"></script>
+</head>
+
+<body>
+    chat:
+    <div style="display: flex; flex-direction: row;">
+        <ul id="messages">  
+        </ul>
+        <ul id="users">
+        </ul>
+        <div>
+            <h1 id="name">name:<%= name %></h1>
+            <h1 id="key">key:<%= key %></h1>
+        </div>  
+    </div>
+    <form id="chat">
+        <input type="text" name="text" id="text">
+        <button type="submit">Submit</button></form>
+    <!-- <script>
+        // Scroll to     the bottom of the messages list on page load
+        var name = document.getElementById("name").innerHTML.slice(5)
+        var key = document.getElementById("key").innerHTML.slice(4)
+        var messageText;
+        let messageBlock = document.getElementById("messages")
+        let usersBlock = document.getElementById("users")
+        document.getElementById("chat").addEventListener("submit", function (e) {
+            e.preventDefault(); // Stop normal form submission
+            console.log("sent")
+            messageText = document.getElementById("text").value;
+            document.getElementById("text").value = ''
+            fetch("/messages/sendMessage", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: messageText,
+                        user:name,
+                        key:key
+                    }) // example data
+                })
+                .catch(err => console.error("Error sending message:", err))
+        })
+
+        function getMessages() {
+            console.log("ask")
+            fetch("/messages/getMessages").then(res => res.json()).then(data => {
+                messageBlock.innerHTML = ''
+                usersBlock.innerHTML = ''
+                data.messages.forEach(message => {
+                    const li = document.createElement("li");
+                    li.textContent = message.user + ": " + message.message;
+                    messageBlock.appendChild(li)
+                });
+                data.users.forEach(user => {
+                    const li = document.createElement("li");
+                    li.textContent = user;
+                    usersBlock.appendChild(li)
+                });
+            }).catch(err => console.error("Error getting messages:", err))
+        }
+        setInterval(getMessages, 2000);
+        window.onload = function () {
+            var messages = document.getElementById('messages');
+            messages.scrollTop = messages.scrollHeight;
+        };
+    </script> -->
+</body>
+
+</html>

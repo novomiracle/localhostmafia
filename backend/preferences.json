@@ -1,0 +1,11 @@
+{
+    "roles":{
+        "mafia":1,
+        "citizen":2
+    },
+    "times":{
+       "TALKING": 300,
+        "VOTING": 60,
+        "NIGHT": 300
+    }
+}

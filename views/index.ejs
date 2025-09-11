@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+    <form action="/send" method="post">
+        <input type="text" name="text" value="<%= locals.text || 'Anonymous' %>">
+        <button type="submit">Submit</button></form>
+        <% if(locals.passed == "false"){%>
+            <h1 style="color:red">the name is taken</h1>
+        <%}%>
+</body>
+
+</html>

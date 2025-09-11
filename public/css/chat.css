@@ -1,0 +1,20 @@
+#messages {
+    height: 200px;
+    width: 400px;
+    overflow-y: auto;
+    border: 1px solid #1a1919;
+    padding: 10px;
+}
+.actionbutton{
+    width: 40px;
+    height: 16px;
+    /* display: none; */
+}
+.pointbutton{
+    width: 40px;
+    height: 16px;
+    display: none;
+}
+.activebutton{
+    display: block!important;
+}
