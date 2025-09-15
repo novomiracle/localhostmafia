@@ -127,6 +127,7 @@ function notEnoughPlayers() {
     //data.messages.push(message)
     client.send(JSON.stringify(message))
   })
+  started = false
 }
 
 function countVotes() {
@@ -269,8 +270,8 @@ wss.on("connection", (ws) => {
 server.listen(3001, "0.0.0.0")
 
 function start() {
-  giveRandomRoles()
   started = true
+  giveRandomRoles()
 }
 const replServer = repl.start('> ');
 
