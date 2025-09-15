@@ -3,6 +3,6 @@ module.exports = {
   messages: [],
   roles: {
     citizen: 1,
-    mafia: 1
+    //mafia: 1
   }
 }

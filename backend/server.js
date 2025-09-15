@@ -5,6 +5,7 @@ const data = require('./data.js')
 const WebSocket = require('ws');
 let mafia = []
 let time = 0;
+let victims = []
 let votes = 0;
 let times = {
   TALKING: 300,
@@ -19,7 +20,7 @@ const states = {
   NIGHT: 2
 }
 let started = false;
-let state = states.NIGHT;
+let state = states.TALKING;
 //const userRouter = require('./routers/users.js')
 const http = require("http");
 const messagesRouter = require('./routers/messages.js');
@@ -306,9 +307,9 @@ function changeState(n) {
   return n
 }
 
-function kill(target) {
+function kill(target, voting = false) {
   numberOfPlayers--;
-  if(data.users[target].role == "mafia"){
+  if (data.users[target].role == "mafia") {
     numberOfMafia--;
   }
   data.users[target].role = "dead"
@@ -316,46 +317,76 @@ function kill(target) {
     client.send(JSON.stringify({
       type: "start"
     }))
+    if (voting) {
+      client.send(JSON.stringify({
+        type: "message",
+        name:"server",
+        message:`${target} was voted out`
+      }))
+    }
   })
-  if(numberOfPlayers/2 <= numberOfMafia){
+  if (numberOfPlayers / 2 <= numberOfMafia) {
     wss.clients.forEach((client) => {
-    client.send(JSON.stringify({
-      type: "message",
-      name:"server",
-      message:"Mafia won"
-    }))
-    started = false;
-  })
-  }else if(1 > numberOfMafia){
+      client.send(JSON.stringify({
+        type: "message",
+        name: "server",
+        message: "Mafia won"
+      }))
+      started = false;
+    })
+  } else if (1 > numberOfMafia) {
     wss.clients.forEach((client) => {
-    client.send(JSON.stringify({
-      type: "message",
-      name:"server",
-      message:"Citizens won"
-    }))
-    started = false;
-  })
+      client.send(JSON.stringify({
+        type: "message",
+        name: "server",
+        message: "Citizens won"
+      }))
+      started = false;
+    })
   }
 }
 setInterval(timer, 1000)
-
+function test(){
+  console.log("interval")
+}
 function timer() {
   if (started) {
     time++;
   }
   switch (state) {
     case states.TALKING:
-      if (timer > times.TALKING) {
+      if (time > times.TALKING) {
+        wss.clients.forEach((client) => {
+          client.send(JSON.stringify({
+            type: "message",
+            message: "time to vote",
+            name: "server"
+          }))
+        })
         nextState();
       }
       break
     case states.VOTING:
-      if (timer > times.VOTING) {
+      if (time > times.VOTING) {
+        wss.clients.forEach((client) => {
+          client.send(JSON.stringify({
+            type: "message",
+            message: "as the night begins, citizens fall asleep, and mafia chooses its new victim",
+            name: "server"
+          }))
+        })
         nextState();
       }
       break
     case states.NIGHT:
-      if (timer > times.NIGHT) {
+      if (time > times.NIGHT) {
+        wss.clients.forEach((client) => {
+          client.send(JSON.stringify({
+            type: "message",
+            message: "the sun rises, and the citizens wake up",
+            name: "server"
+          }))
+        })
         nextState();
       }
       break
@@ -370,7 +401,7 @@ function getState() {
 }
 
 function readPreferences() {
-  let preferences = fs.readFile("preferences.json", 'utf8', (err, data) => {
+  let preferences = fs.readFile("backend/preferences.json", 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading file:', err);
       return;
@@ -386,7 +417,9 @@ function readPreferences() {
 }
 // expose functions to REPL
 replServer.context.preferences = readPreferences;
+
 replServer.context.start = start;
+
 replServer.context.changeState = changeState;
 replServer.context.data = data;
 replServer.context.server = server;
