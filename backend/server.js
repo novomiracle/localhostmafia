@@ -14,6 +14,7 @@ let times = {
 }
 let numberOfMafia = 0;
 let numberOfPlayers = 0;
+let maxPlayers;
 const states = {
   TALKING: 0,
   VOTING: 1,
@@ -33,6 +34,7 @@ const wss = new WebSocket.Server({
   server
 });
 const router = express.Router();
+readPreferences()
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({
@@ -61,6 +63,9 @@ app.post('/send', (req, res) => {
       numberOfPlayers++;
     }
     res.redirect(`/messages?name=${encodeURIComponent(req.body.text)}&key=${encodeURIComponent(key)}`)
+    if(numberOfPlayers == maxPlayers){
+      start()
+    }
   } else {
     res.redirect(`/?name=${encodeURIComponent(req.body.text)}&passed=false`)
   }
@@ -100,6 +105,11 @@ function giveRandomRoles() {
       wss.clients.forEach((client) => {
         client.send(JSON.stringify({
           type: "start"
+        }))
+        client.send(JSON.stringify({
+          type: "message",
+          name:"server",
+          message:"start"
         }))
       })
     }
@@ -410,10 +420,12 @@ function readPreferences() {
   });
   let jsonFile = JSON.parse(preferences)
   times = jsonFile.times
-  data.users.roles = jsonFile.roles
+  data.roles = jsonFile.roles
+  maxPlayers = 0
+  Object.keys(data.roles).forEach(role => {
+    maxPlayers += role
+  })
   return preferences
-
-
 }
 // expose functions to REPL
 replServer.context.preferences = readPreferences;
